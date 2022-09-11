@@ -6,7 +6,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.express as px
 
-df = pd.read_excel("Farm - clustering or prediction.xlsx")
+df = pd.read_excel("p1\Farm - clustering or prediction.xlsx")
 
 # you need to include __name__ in your Dash constructor if
 # you plan to use a custom CSS or JavaScript in your Dash apps
@@ -35,7 +35,7 @@ app.layout = html.Div([
     ]),
 
     html.Div([
-        dcc.Graph(id='the_graph',figure=[])
+        dcc.Graph(id='the_graph',figure={})
     ]),
 
 ])

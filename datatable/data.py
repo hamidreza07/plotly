@@ -12,10 +12,11 @@ app = dash.Dash(__name__)
 
 #---------------------------------------------------------------
 #Taken from https://www.ecdc.europa.eu/en/geographical-distribution-2019-ncov-cases
-df = pd.read_excel("COVID-19-geographic-disbtribution-worldwide-2020-03-29.xlsx")
+df = pd.read_excel("datatable\COVID-19-geographic-disbtribution-worldwide-2020-03-29.xlsx")
 
 dff = df.groupby('countriesAndTerritories', as_index=False)[['deaths','cases']].sum()
-print (dff[:5])
+
+
 #---------------------------------------------------------------
 app.layout = html.Div([
     html.Div([
@@ -31,7 +32,7 @@ app.layout = html.Div([
             sort_mode="multi",
             row_selectable="multi",
             row_deletable=False,
-            selected_rows=[],
+            selected_rows=[], #in fact number of index 
             page_action="native",
             page_current= 0,
             page_size= 6,
@@ -81,11 +82,11 @@ app.layout = html.Div([
 
     html.Div([
         html.Div([
-            dcc.Graph(id='linechart'),
+            dcc.Graph(id='linechart',figure={}),
         ],className='six columns'),
 
         html.Div([
-            dcc.Graph(id='piechart'),
+            dcc.Graph(id='piechart',figure={}),
         ],className='six columns'),
 
     ],className='row'),
@@ -101,13 +102,12 @@ app.layout = html.Div([
      Input('piedropdown', 'value'),
      Input('linedropdown', 'value')]
 )
-def update_data(selected_rows,piedropval,linedropval):
+def update_data(selected_rows,piedropval,linedropval):  #input of function is input of callback by order 
     if len(selected_rows)==0:
         df_filterd = dff[dff['countriesAndTerritories'].isin(['China','Iran','Spain','Italy'])]
     else:
-        print(selected_rows)
         df_filterd = dff[dff.index.isin(selected_rows)]
-    print(df_filterd)
+    
 
     pie_chart=px.pie(
             data_frame=df_filterd,
@@ -120,12 +120,12 @@ def update_data(selected_rows,piedropval,linedropval):
 
     #extract list of chosen countries
     list_chosen_countries=df_filterd['countriesAndTerritories'].tolist()
-    print(list_chosen_countries)
+    
 
     #filter original df according to chosen countries
     #because original df has all the complete dates
     df_line = df[df['countriesAndTerritories'].isin(list_chosen_countries)]
-    print(df_line)
+    
 
     line_chart = px.line(
             data_frame=df_line,
@@ -134,7 +134,7 @@ def update_data(selected_rows,piedropval,linedropval):
             color='countriesAndTerritories',
             labels={'countriesAndTerritories':'Countries', 'dateRep':'date'}, #rename
             )
-    line_chart.update_layout(uirevision='foo')
+    line_chart.update_layout(uirevision='foo') # this made the date freeze on line chart
 
     return (pie_chart,line_chart)
 
